@@ -1,0 +1,164 @@
+﻿@using DVD_World.Models;
+@model List<Advertisement>
+
+<link href="~/Admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Advertisement Banners</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Banner List</h6>
+            <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addBannerModal">
+                <i class="fas fa-plus"></i> Add New Banner
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Banner Name</th>
+                            <th>Banner Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var banner in Model)
+                        {
+                            <tr class="text-center">
+                                <td>@banner.Name</td>
+                                <td>
+                                    <img src="~/@banner.BannerUrl" class="rounded" alt="Banner Image" width="50" height="50">
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editBannerModal-@banner.Id">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteBannerModal-@banner.Id">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Edit Banner Modal -->
+                            <div class="modal fade" id="editBannerModal-@banner.Id" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Advertisement Banner</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+                                        <form asp-action="EditAdvertisement" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="Id" value="@banner.Id" />
+                                                <div class="form-group">
+                                                    <label>Banner Title</label>
+                                                    <input type="text" class="form-control" name="Name" value="@banner.Name" />
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Banner Image</label>
+                                                    <input type="file" class="form-control" name="BannerUrl" />
+                                                    <small class="form-text text-muted">Leave empty to keep the current image.</small>
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delete Banner Modal -->
+                            <div class="modal fade" id="deleteBannerModal-@banner.Id" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+                                        <form asp-action="DeleteAdvertisement" asp-controller="Admin" method="POST">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="Id" value="@banner.Id" />
+                                                <p>Are you sure you want to delete this banner?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Banner Modal -->
+<div class="modal fade" id="addBannerModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Advertisement Banner</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form asp-action="AddAdvertisement" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Banner Title</label>
+                        <input type="text" class="form-control" name="Name" />
+                    </div>
+                    <div class="form-group">
+                        <label>Banner Image</label>
+                        <input type="file" class="form-control" name="BannerUrl" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Banner</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(".alert").fadeOut("slow");
+        }, 5000);
+    });
+</script>

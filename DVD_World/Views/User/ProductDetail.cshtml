@@ -1,0 +1,118 @@
+﻿@{
+    Layout = "UserLayout";
+}
+
+@model Product
+
+<!-- Product Detail Section -->
+<div class="container product-detail-container my-5">
+    <div class="row">
+        <!-- Product Image Section -->
+        <div class="col-lg-6 text-center">
+            <img src="~/@Model.ImageUrl" class="product-image img-fluid shadow-lg rounded" alt="@Model.Name">
+        </div>
+
+        <!-- Product Details Section -->
+        <div class="col-lg-6 d-flex flex-column justify-content-center">
+            <h2 class="product-title">@Model.Name</h2>
+            <p class="category-badge">Category: <span>@Model.Category</span></p>
+            <p class="product-description">@Model.Description</p>
+            <h3 class="product-price">$@Model.Price</h3>
+
+            <!-- Add to Cart Button -->
+            <a href="@Url.Action("AddToCart", "Product", new { id = Model.Id })" class="btn btn-lg btn-primary shadow-sm add-to-cart-btn">
+                <i class="fas fa-shopping-cart"></i> Add to Cart
+            </a>
+
+            @* <a class="btn btn-lg btn-primary shadow-sm add-to-cart-btn">
+                <i class="fas fa-shopping-cart"></i> Add to Cart
+            </a> *@
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    /* Container Styling */
+    .product-detail-container {
+        max-width: 1100px;
+        background: #fff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Product Image */
+    .product-image {
+        max-width: 100%;
+        height: 255px;
+        border-radius: 10px;
+        transition: transform 0.3s ease-in-out;
+    }
+    .product-image:hover {
+        transform: scale(1.05);
+    }
+
+    /* Product Title */
+    .product-title {
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Category Badge */
+    .category-badge {
+        font-size: 16px;
+        color: #555;
+        background: #f8f9fa;
+        padding: 8px 12px;
+        border-radius: 5px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    .category-badge span {
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    /* Product Description */
+    .product-description {
+        font-size: 16px;
+        color: #666;
+        line-height: 1.6;
+    }
+
+    /* Product Price */
+    .product-price {
+        font-size: 24px;
+        font-weight: bold;
+        color: #28a745;
+        margin-top: 10px;
+    }
+
+    /* Add to Cart Button */
+    .add-to-cart-btn {
+        font-size: 18px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+    .add-to-cart-btn:hover {
+        background: #0056b3;
+        transform: scale(1.05);
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .product-title {
+            font-size: 24px;
+        }
+        .product-description {
+            font-size: 14px;
+        }
+        .product-price {
+            font-size: 20px;
+        }
+    }
+</style>

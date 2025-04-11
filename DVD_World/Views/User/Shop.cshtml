@@ -1,0 +1,167 @@
+﻿@{
+    Layout = "UserLayout";
+}
+
+@model List<Product>
+
+<!-- Slider area start -->
+<div class="slider-area bg-black">
+    <div class="container-fluid p-0">
+        <div class="series-slider-active nav-style-1">
+            <div class="single-hero-img-2">
+                <a href="#"><img src="~/User/assets/images/slider/horror-slider-1.png" alt="Shop Banner"></a>
+            </div>
+            <div class="single-hero-img-2">
+                <a href="#"><img src="~/User/assets/images/slider/horror-slider-2.png" alt="Shop Banner"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product List Area -->
+<div class="container-fluid section-padding-lr section-pt-50 section-pb-50 bg-black">
+
+    <!-- DVD Section -->
+    @* <h2 class="category-title">DVDs</h2> *@
+    <div class="section-title-4 st-border-bottom">
+        <h2>DVDs</h2>
+    </div>
+    <div class="row">
+        @foreach (var product in Model.Where(p => p.Category == "DVD"))
+        {
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+                <div class="movie-wrap text-center mb-30">
+                    <div class="movie-img">
+                        <a href="User/ProductDetail/@product.Id">
+                            <img src="~/@product.ImageUrl" style="width: 100%; height: 300px;" alt="@product.Name">
+                        </a>
+                        <button title="Add to Cart" class="Watch-list-btn" type="button"><i class="zmdi zmdi-shopping-cart"></i></button>
+                    </div>
+                    <div class="movie-content">
+                        <h3 class="title">
+                            <a href="ProductDetail/@product.Id">@product.Name</a>
+                        </h3>
+                        <span>Price: $@product.Price</span>
+                        <div class="movie-btn">
+                            @if (Context.Session.GetString("Username") != null)
+                            {
+                                <a href="@Url.Action("ProductDetail", "User", new { id = product.Id })" class="btn-style-hm4-2 animated">View Details</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:void(0);" onclick="showLoginAlert(@product.Id)" class="btn-style-hm4-2 animated">View Details</a>
+                            }
+                        </div>
+
+                      @*   <div class="movie-btn">
+                            <a href="ProductDetail/@product.Id" class="btn-style-hm4-2 animated">View Details</a>
+                        </div> *@
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Disc Section -->
+    <div class="section-title-4 st-border-bottom">
+        <h2>Albums</h2>
+    </div>
+    <div class="row">
+        @foreach (var product in Model.Where(p => p.Category == "Album"))
+        {
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+                <div class="movie-wrap text-center mb-30">
+                    <div class="movie-img">
+                        <a href="User/ProductDetail/@product.Id">
+                            <img src="~/@product.ImageUrl" style="width: 100%; height: 300px;" alt="@product.Name">
+                        </a>
+                        <button title="Add to Cart" class="Watch-list-btn" type="button"><i class="zmdi zmdi-shopping-cart"></i></button>
+                    </div>
+                    <div class="movie-content">
+                        <h3 class="title">
+                            <a href="ProductDetail/@product.Id">@product.Name</a>
+                        </h3>
+                        <span>Price: $@product.Price</span>
+                        <div class="movie-btn">
+                            @if (Context.Session.GetString("Username") != null)
+                            {
+                                <a href="@Url.Action("ProductDetail", "User", new { id = product.Id })" class="btn-style-hm4-2 animated">View Details</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:void(0);" onclick="showLoginAlert(@product.Id)" class="btn-style-hm4-2 animated">View Details</a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <!-- Disc Section -->
+    <div class="section-title-4 st-border-bottom">
+        <h2>Movies</h2>
+    </div>
+    <div class="row">
+        @foreach (var product in Model.Where(p => p.Category == "Movie"))
+        {
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
+                <div class="movie-wrap text-center mb-30">
+                    <div class="movie-img">
+                        <a href="User/ProductDetail/@product.Id">
+                            <img src="~/@product.ImageUrl" style="width: 100%; height: 300px;" alt="@product.Name">
+                        </a>
+                        <button title="Add to Cart" class="Watch-list-btn" type="button"><i class="zmdi zmdi-shopping-cart"></i></button>
+                    </div>
+                    <div class="movie-content">
+                        <h3 class="title">
+                            <a href="ProductDetail/@product.Id">@product.Name</a>
+                        </h3>
+                        <span>Price: $@product.Price</span>
+                        <div class="movie-btn">
+                            @if (Context.Session.GetString("Username") != null)
+                            {
+                                <a href="@Url.Action("ProductDetail", "User", new { id = product.Id })" class="btn-style-hm4-2 animated">View Details</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:void(0);" onclick="showLoginAlert(@product.Id)" class="btn-style-hm4-2 animated">View Details</a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .category-title {
+        font-size: 26px;
+        font-weight: bold;
+        color: #ffffff;
+        text-align: left;
+        margin-bottom: 20px;
+        padding-left: 15px;
+        border-bottom: 2px solid #ff3d00;
+        display: inline-block;
+    }
+</style>
+
+
+<script>
+    function showLoginAlert(productId) {
+        // Store return URL in session storage
+        sessionStorage.setItem("returnUrl", "/User/ProductDetail/" + productId);
+
+        alert("Please log in first to view details.");
+        window.location.href = "/User/UserLogin"; // Redirect to login page
+    }
+</script>
+

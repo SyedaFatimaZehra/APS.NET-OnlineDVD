@@ -1,0 +1,331 @@
+﻿@using static DVD_World.Models.Song
+@{
+    var songFormModel = ViewBag.SongFormModel as DVD_World.Models.Song;
+    @model DVD_World.Models.Song;
+}
+
+
+<!-- Custom styles for this page -->
+
+
+<link href="~/Admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<div class="container-fluid">
+
+    <h1 class="h3 mb-2 text-gray-800">Music Library</h1>
+
+    <div class="card shadow mb-4">
+         <div class="card-header py-3 d-flex justify-content-between align-items-center">
+             <h6 class="m-0 font-weight-bold text-primary">Songs List</h6>
+             <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#uploadSongModal">
+                 <i class="fas fa-music"></i> Upload New Song
+             </a>
+         </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Artist Image</th>
+                            <th>Artist Name</th>
+                            <th>Song Name</th>
+                            <th>Album</th>
+                            <th>Genre</th>
+                            <th>Year</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr class="text-center">
+                            <th>Artist Image</th>
+                            <th>Artist Name</th>
+                            <th>Song Name</th>
+                            <th>Album</th>
+                            <th>Genre</th>
+                            <th>Year</th>
+                            <th>Actions</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        @if (ViewBag.Songs != null )
+                        {
+
+                @foreach (var song in ViewBag.Songs)
+                {
+                    <tr class="text-center">
+                                <td>
+                                <img src="~/@song.Artist.ImageUrl" class="rounded-circle" alt="Song Image" width="50" height="50">
+                                </td>
+                              
+                                @if(song.Artist != null)
+                                {
+                                    <td>@song.Artist.Name</td>
+                                }
+                                else
+                                {
+                                    <td>No Artist</td>
+                                }
+                                          <td>@song.SongName</td>
+                                @if(song.Album != null)
+                                {
+                                    <td>@(song.Album.Title)</td>
+                                }
+                                else
+                                {
+                                    <td>No Album</td>
+                                }
+                                <td>@song.Genre</td>
+                                <td>@song.Year</td>
+                            <td>
+                                    <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editSongModal-@song.Id">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteSongModal-@song.Id">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+
+                            <!-- Edit Song Modal -->
+                            <div class="modal fade" id="editSongModal-@song.Id" tabindex="-1" role="dialog" aria-labelledby="editSongModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editSongModalLabel">Edit Song</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                            <form asp-action="EditSong" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="Id" value="@song.Id" /> 
+                                                    <!-- Song Title -->
+                                                    <div class="form-group">
+                                                        <label for="editSongName">Song Title</label>
+                                                        <input type="text" class="form-control" id="editSongName" name="SongName" value="@song.SongName" >
+                                                    </div>   
+
+                                                    <!-- Artist -->
+                                                    <div class="form-group">
+                                                        <label>Artist</label>
+                                                        <select class="form-control" name="ArtistId" required>
+                                                            <option value="">-- Select an Artist --</option>
+                                                            @foreach (var artist in ViewBag.Artists)
+                                                            {
+                                                                <option value="@artist.Id" selected="@(artist.Id == song.ArtistId ? "selected" : null)">
+                                                                    @artist.Name
+                                                                </option>
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Album -->
+                                                    <div class="form-group">
+                                                        <label>Album</label>
+                                                        <select class="form-control" name="AlbumId" required>
+                                                            <option value="">-- Select an Album --</option>
+                                                            @foreach (var album in ViewBag.Albums)
+                                                            {
+                                                                <option value="@album.Id" selected="@(album.Id == song.AlbumId ? "selected" : null)">
+                                                                    @album.Title
+                                                                </option>
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Genre -->
+                                                    <div class="form-group">
+                                                        <label for="editGenre">Genre</label>
+                                                        <select class="form-control" id="editGenre" name="Genre"  asp-items="Html.GetEnumSelectList<GenreEnum>()">
+                                                            <option value="">Select Genre</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Year -->
+                                                    <div class="form-group">
+                                                        <label for="editYear">Year</label>
+                                                        <select class="form-control" id="editYear" name="Year" asp-items="Html.GetEnumSelectList<YearEnum>()">
+                                                            <option value="">Select Year</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="editSongUrl">Replace Song File</label>
+                                                        <input type="file" class="form-control-file" id="editSongUrl" name="SongUrl" accept=".mp3, .wav">
+                                                        <small class="form-text text-muted">Leave empty to keep the current file.</small>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="editSongImage">Replace Song Image</label>
+                                                        <input type="file" class="form-control-file" id="editSongImage" name="SongImage">
+                                                        <small class="form-text text-muted">Leave empty to keep the current image.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                </div>
+                                            </form>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                                <!-- Delete Song Modal -->
+                                <div class="modal fade" id="deleteSongModal-@song.Id" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <form action="/Admin/DeleteSong" method="POST">
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="Id" value="@song.Id" />
+                                                    <p>Are you sure you want to delete <strong>@song.SongName</strong> by <strong>@song.Artist.Name</strong>?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                
+                
+                
+                 }  @* End of foreach *@
+
+                        }
+                     
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+
+<!-- Upload Song Modal -->
+<div class="modal fade" id="uploadSongModal" tabindex="-1" role="dialog" aria-labelledby="uploadSongModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadSongModalLabel">Upload New Song</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-action="UploadSong" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" asp-for="@songFormModel.Id" />
+
+                    <!-- Song Title -->
+                    <div class="form-group">
+                        <label asp-for="@songFormModel.SongName"></label>
+                        <input asp-for="SongName" class="form-control" placeholder="Enter song title">
+                        <span asp-validation-for="@songFormModel.SongName" class="text-danger"></span>
+                    </div>
+
+                    <!-- Artist -->
+                    <div class="form-group">
+                        <label>Artist</label>
+                        <select class="form-control" name="ArtistId" required>
+                            <option value="">-- Select an Artist --</option> 
+                            @foreach (var artist in ViewBag.Artists)
+                            {
+                                <option value="@artist.Id">@artist.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <!-- Album -->
+                    <div class="form-group">
+                        <label>Album</label>
+                        <select class="form-control" name="AlbumId" required>
+                            <option value="">-- Select an Album --</option>
+                            @foreach (var album in ViewBag.Albums)
+                            {
+                                <option value="@album.Id">@album.Title</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Genre -->
+                    <div class="form-group">
+                        <label asp-for="Genre"></label>
+                        <select asp-for="Genre" class="form-control" asp-items="Html.GetEnumSelectList<GenreEnum>()">
+                            <option value="">Select Genre</option>
+                        </select>
+                        <span asp-validation-for="Genre" class="text-danger"></span>
+                    </div>
+
+                    <!-- Year -->
+                    <div class="form-group">
+                        <label asp-for="Year"></label>
+                        <select asp-for="Year" class="form-control" asp-items="Html.GetEnumSelectList<YearEnum>()">
+                            <option value="">Select Year</option>
+                        </select>
+                        <span asp-validation-for="Year" class="text-danger"></span>
+                    </div>
+
+                    <!-- Song File Upload -->
+                    <div class="form-group">
+                        <label for="SongUrl">Upload Song</label>
+                        <input type="file" class="form-control-file" id="SongUrl" name="SongUrl" accept=".mp3, .wav">
+                        <small class="form-text text-muted">Allowed formats: MP3, WAV</small>
+                        <span asp-validation-for="@songFormModel.SongUrl" class="text-danger"></span>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="form-group">
+                        <label for="SongImage">Upload Song Image</label>
+                        <input type="file" class="form-control-file" id="SongImage" name="SongImage">
+                        <small class="form-text text-muted">Allowed formats: JPG, PNG</small>
+                        <span asp-validation-for="@songFormModel.SongImage" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload Song</button>
+                </div>
+            </form>
+     
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(".alert").fadeOut("slow");
+        }, 5000);
+    });
+</script>

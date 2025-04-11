@@ -1,0 +1,313 @@
+﻿@using DVD_World.Models;
+@model List<Product>
+
+<link href="~/Admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Products</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Product List</h6>
+            <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addProductModal">
+                <i class="fas fa-box"></i> Add New Product
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Album</th>
+                            <th>Movie</th>
+                            <th>Game</th>
+                            <th>Description</th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            @foreach (var product in Model)
+                            {
+                                <tr class="text-center">
+                                    <td>@product.Name</td>
+                                    <td>@product.Category</td>
+                                    <td>@product.Price</td>
+                                    <td>@(product.Album != null ? product.Album.Title : "N/A")</td>
+                                    <td>@(product.Movie != null ? product.Movie.MovieName : "N/A")</td>
+                                    <td>@(product.Game != null ? product.Game.GameName : "N/A")</td>
+                                    <td>@product.Description</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                        {
+                                            <img src="~/@product.ImageUrl" alt="Product Image" width="50" height="50">
+                                        }
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editProductModal-@product.Id">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteProductModal-@product.Id">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Edit Product Modal -->
+                                <div class="modal fade" id="editProductModal-@product.Id" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit Product</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <form asp-action="EditProduct" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="Id" value="@product.Id" />
+
+                                                    <div class="form-group">
+                                                        <label>Product Name</label>
+                                                        <input type="text" class="form-control" name="Name" value="@product.Name" required />
+                                                    </div>
+
+                                                    @* <div class="form-group">
+                                                        <label>Category</label>
+                                                        <input type="text" class="form-control" name="Category" value="@product.Category" required />
+                                                    </div> *@
+                                                    <div class="form-group">
+                                                        <label>Category</label>
+                                                        <select class="form-control" name="Category" required>
+                                                            <option value="">Select a Category</option>
+                                                            <option value="Album" selected="@(product.Category == "Album" ? "selected" : null)">Album</option>
+                                                            <option value="Movie" selected="@(product.Category == "Movie" ? "selected" : null)">Movie</option>
+                                                            <option value="Game" selected="@(product.Category == "Game" ? "selected" : null)">Game</option>
+                                                            <option value="DVD" selected="@(product.Category == "DVD" ? "selected" : null)">DVD</option>
+                                                            <option value="Blu-ray" selected="@(product.Category == "Blu-ray" ? "selected" : null)">Blu-ray</option>
+                                                            <option value="Music CD" selected="@(product.Category == "Music CD" ? "selected" : null)">Music CD</option>
+                                                            <option value="Collector's Edition" selected="@(product.Category == "Collector's Edition" ? "selected" : null)">Collector's Edition</option>
+                                                            <option value="Limited Edition" selected="@(product.Category == "Limited Edition" ? "selected" : null)">Limited Edition</option>
+                                                            <option value="Digital Download" selected="@(product.Category == "Digital Download" ? "selected" : null)">Digital Download</option>
+                                                            <option value="Merchandise" selected="@(product.Category == "Merchandise" ? "selected" : null)">Merchandise</option>
+                                                        </select>
+                                                    </div>
+
+
+                                                    <div class="form-group">
+                                                        <label>Price</label>
+                                                        <input type="number" class="form-control" name="Price" value="@product.Price" step="0.01" required />
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Album</label>
+                                                        <select class="form-control" name="AlbumId">
+                                                            <option value="">Select an Album (Optional)</option>
+                                                            @foreach (var album in ViewBag.Albums)
+                                                            {
+                                                                <option value="@album.Id" selected="@(album.Id == product.AlbumId ? "selected" : null)">@album.Title</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Movie</label>
+                                                        <select class="form-control" name="MovieId">
+                                                            <option value="">Select a Movie (Optional)</option>
+                                                            @foreach (var movie in ViewBag.Movies)
+                                                            {
+                                                                <option value="@movie.Id" selected="@(movie.Id == product.MovieId ? "selected" : null)">@movie.MovieName</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Game</label>
+                                                        <select class="form-control" name="GameId">
+                                                            <option value="">Select a Game (Optional)</option>
+                                                            @foreach (var game in ViewBag.Games)
+                                                            {
+                                                                <option value="@game.Id" selected="@(game.Id == product.GameId ? "selected" : null)">@game.GameName</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Description</label>
+                                                        <textarea class="form-control" name="Description">@product.Description</textarea>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Product Image</label>
+                                                        <input type="file" class="form-control" name="ProductImage" />
+                                                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                                        {
+                                                            <div class="mt-2">
+                                                                <img src="@product.ImageUrl" alt="Product Image" style="width: 100px; height: auto;" />
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Delete Product Modal -->
+                                <div class="modal fade" id="deleteProductModal-@product.Id" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <form asp-action="DeleteProduct" asp-controller="Admin" method="POST">
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="Id" value="@product.Id" />
+                                                    <p>Are you sure you want to delete <strong>@product.Name</strong>?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Product</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form asp-action="AddProduct" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" class="form-control" name="Name" required>
+                    </div>
+                @*     <div class="form-group">
+                        <label>Category</label>
+                        <input type="text" class="form-control" name="Category" required>
+                    </div> *@
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select class="form-control" name="Category" required>
+                            <option value="">Select a Category</option>
+                            <option value="Album">Album</option>
+                            <option value="Movie">Movie</option>
+                            <option value="Game">Game</option>
+                            <option value="DVD">DVD</option>
+                            <option value="Blu-ray">Blu-ray</option>
+                            <option value="Music CD">Music CD</option>
+                            <option value="Collector's Edition">Collector's Edition</option>
+                            <option value="Limited Edition">Limited Edition</option>
+                            <option value="Digital Download">Digital Download</option>
+                            <option value="Merchandise">Merchandise</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" class="form-control" name="Price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Album</label>
+                        <select class="form-control" name="AlbumId">
+                            <option value="">Select an Album (Optional)</option>
+                            @foreach (var album in ViewBag.Albums)
+                            {
+                                <option value="@album.Id">@album.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Movie</label>
+                        <select class="form-control" name="MovieId">
+                            <option value="">Select a Movie (Optional)</option>
+                            @foreach (var movie in ViewBag.Movies)
+                            {
+                                <option value="@movie.Id">@movie.MovieName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Game</label>
+                        <select class="form-control" name="GameId">
+                            <option value="">Select a Game (Optional)</option>
+                            @foreach (var game in ViewBag.Games)
+                            {
+                                <option value="@game.Id">@game.GameName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" name="Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Product Image</label>
+                        <input type="file" class="form-control" name="ProductImage">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(".alert").fadeOut("slow");
+        }, 5000);
+    });
+</script>

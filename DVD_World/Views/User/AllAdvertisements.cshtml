@@ -1,0 +1,15 @@
+﻿@model List<Advertisement>
+@{
+    Layout = "UserLayout";
+}
+
+
+
+@foreach (var ad in Model)
+{
+    <div class="series-banner-img">
+        <a href="@(!string.IsNullOrEmpty(ad.BannerUrl) ? ad.BannerUrl : "#")">
+            <img src="~/@ad.BannerUrl" alt="Advertisement">
+        </a>
+    </div>
+}

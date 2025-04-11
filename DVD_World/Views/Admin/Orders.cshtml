@@ -1,0 +1,109 @@
+﻿@using DVD_World.Models;
+@model List<Order>
+
+
+    <link href="~/Admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Orders</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Order ID</th>
+                            <th>Customer Name</th>
+                            <th>Email</th>
+                            <th>Total Amount</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr class="text-center">
+                                <td>@order.Id</td>
+                                <td>@order.User?.Name</td>
+                                <td>@order.User?.Email</td>
+                                <td>$@order.TotalAmount</td>
+                                <td>@order.OrderDate.ToString("dd MMM yyyy")</td>
+                                <td>@order.Status</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#orderDetailsModal-@order.Id">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals should be OUTSIDE the table -->
+@foreach (var order in Model)
+{
+    <div class="modal fade" id="orderDetailsModal-@order.Id" tabindex="-1" role="dialog" aria-labelledby="orderDetailsLabel-@order.Id" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Order Details - #@order.Id</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <h6><strong>Customer Information:</strong></h6>
+                    <p><strong>Name:</strong> @order.User?.Name</p>
+                    <p><strong>Email:</strong> @order.User?.Email</p>
+                    <hr>
+
+                    <h6><strong>Order Items:</strong></h6>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (order.OrderItems != null && order.OrderItems.Any())
+                            {
+                                @foreach (var item in order.OrderItems)
+                                {
+                                    <tr class="text-center">
+                                        <td>@item.Product?.Name</td>
+                                        <td>@item.Quantity</td>
+                                        <td>$@item.Price</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No items in this order.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <hr>
+                    <h6><strong>Total Amount: </strong> $@order.TotalAmount</h6>
+                    <h6><strong>Status: </strong> @order.Status</h6>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

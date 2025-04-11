@@ -1,0 +1,203 @@
+﻿@using DVD_World.Models;
+@model List<Movie>
+
+<link href="~/Admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Movies</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Movie List</h6>
+            <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addMovieModal">
+                <i class="fas fa-film"></i> Add New Movie
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Movie Name</th>
+                            <th>Description</th>
+                            <th>Movie URL</th>
+                            <th>Movie Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr class="text-center">
+                            <th>Movie Name</th>
+                            <th>Description</th>
+                            <th>Movie URL</th>
+                            <th>Movie Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        @foreach (var movie in Model)
+                        {
+                            <tr class="text-center">
+                                <td>@movie.MovieName</td>
+                                <td>@movie.Description</td>
+                                <td><a href="~/@movie.MovieUrl" target="_blank">Watch</a></td>
+                                <td>
+                                    <img src="~/@movie.MovieImage" class="rounded-circle" alt="Movie Image" width="50" height="50">
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editMovieModal-@movie.Id">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteMovieModal-@movie.Id">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Edit Movie Modal -->
+                            <div class="modal fade" id="editMovieModal-@movie.Id" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Movie</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+                                        <form asp-action="EditMovie" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="Id" value="@movie.Id" />
+                                                <div class="form-group">
+                                                    <label>Movie Name</label>
+                                                    <input type="text" class="form-control" name="MovieName" value="@movie.MovieName" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Description</label>
+                                                    <textarea class="form-control" name="Description" >@movie.Description</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Upload Movie</label>
+                                                    <input type="file" class="form-control" name="MovieUrl" />
+                                                    <small class="form-text text-muted">Leave empty to keep the current image.</small>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Upload Movie Image</label>
+                                                    <input type="file" class="form-control" name="MovieImage" />
+                                                    <small class="form-text text-muted">Allowed formats: JPG, PNG</small>
+                                                    <small class="form-text text-muted">Leave empty to keep the current image.</small>
+
+
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delete Movie Modal -->
+                            <div class="modal fade" id="deleteMovieModal-@movie.Id" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+                                        <form asp-action="DeleteMovie" asp-controller="Admin" method="POST">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="Id" value="@movie.Id" />
+                                                <p>Are you sure you want to delete <strong>@movie.MovieName</strong>?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Movie Modal -->
+<div class="modal fade" id="addMovieModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Movie</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form asp-action="AddMovie" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Movie Name</label>
+                        <input type="text" class="form-control" name="MovieName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" name="Description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Movie</label>
+                        <input type="file" class="form-control" name="MovieUrl" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Movie Image</label>
+                        <input type="file" class="form-control" name="MovieImage" required>
+                        <small class="form-text text-muted">Allowed formats: JPG, PNG</small>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+
+                    <button type="submit" class="btn btn-primary">Add Movie</button>
+                </div>
+            </form>
+      
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(".alert").fadeOut("slow");
+        }, 5000);
+    });
+</script>

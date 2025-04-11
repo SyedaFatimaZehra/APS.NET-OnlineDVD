@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\DVD_World.props" />
+</Project>

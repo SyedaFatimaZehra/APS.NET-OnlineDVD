@@ -1,0 +1,214 @@
+﻿@using DVD_World.Models;
+@model List<Album>
+
+<link href="~/Admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Albums</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Album List</h6>
+            <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addAlbumModal">
+                <i class="fas fa-music"></i> Add New Album
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Album Image</th>
+                            <th>Album Title</th>
+                            <th>Artist</th>
+                            <th>Price ($)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr class="text-center">
+                            <th>Album Image</th>
+                            <th>Album Title</th>
+                            <th>Artist</th>
+                            <th>Price ($)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        @foreach (var album in Model)
+                        {
+                            <tr class="text-center">
+                                <td>
+                                    <img src="~/@album.ImageUrl" class="rounded-circle" alt="Album Image" width="50" height="50">
+                                </td>
+                                <td>@album.Title</td>
+                                <td>@album.Artist.Name</td>
+                                <td>@album.Price</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editAlbumModal-@album.Id">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteAlbumModal-@album.Id">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Edit Album Modal -->
+                            <div class="modal fade" id="editAlbumModal-@album.Id" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Album</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+                                        <form action="/Admin/EditAlbum" method="POST" enctype="multipart/form-data">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="Id" value="@album.Id" />
+                                                <div class="form-group">
+                                                    <label>Album Title</label>
+                                                    <input type="text" class="form-control" name="Title" value="@album.Title" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Upload Album Image</label>
+                                                    <input type="file" class="form-control" name="ImageUrl" />
+                                                    <small class="form-text text-muted">Leave empty to keep the current image.</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Artist</label>
+                                                    <select class="form-control" name="ArtistId" required>
+                                                        @foreach (var artist in ViewBag.Artists)
+                                                        {
+                                                            <option value="@artist.Id" selected="@(artist.Id == album.ArtistId ? "selected" : null)">
+                                                                @artist.Name
+                                                            </option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Price</label>
+                                                    <input type="number" class="form-control" name="Price" value="@album.Price" step="0.01" min="0" required>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delete Album Modal -->
+                            <div class="modal fade" id="deleteAlbumModal-@album.Id" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+                                        <form action="/Admin/DeleteAlbum" method="POST">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="Id" value="@album.Id" />
+                                                <p>Are you sure you want to delete <strong>@album.Title</strong> by <strong>@album.Artist.Name</strong>?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- Add Album Modal -->
+<div class="modal fade" id="addAlbumModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Album</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form action="/Admin/AddAlbum" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Album Title</label>
+                        <input type="text" class="form-control" name="Title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Album Image</label>
+                        <input type="file" class="form-control" name="ImageUrl" />
+                        <small class="form-text text-muted">Leave empty to keep the current image.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Artist</label>
+                        <select class="form-control" name="ArtistId" required>
+                            <option value="">-- Select an Artist --</option> 
+                            @foreach (var artist in ViewBag.Artists)
+                            {
+                                <option value="@artist.Id">@artist.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" class="form-control" name="Price" step="0.01" min="0" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+
+                    <button type="submit" class="btn btn-primary">Add Album</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(".alert").fadeOut("slow");
+        }, 5000);
+    });
+</script>

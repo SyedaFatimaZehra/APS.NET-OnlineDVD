@@ -1,0 +1,189 @@
+﻿@using DVD_World.Models;
+@model Artist
+
+<link href="~/Admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+@if (TempData["SuccessMessage"] != null)
+
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Artists</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Artist List</h6>
+            <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addArtistModal">
+                <i class="fas fa-user"></i> Add New Artist
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Artist Image</th>
+                            <th>Artist Name</th>
+                            <th>Bio</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tfoot class="text-center">
+                        <tr class="text-center">
+                            <th>Artist Image</th>
+                            <th>Artist Name</th>
+                            <th>Bio</th>
+                            <th>Actions</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        @foreach (var artist in ViewBag.Artists)
+
+                        {
+                            <tr class="text-center">
+                                <td>
+                                    <img src="~/@artist.ImageUrl" class="rounded-circle" alt="Artist Image" width="50" height="50">
+                                </td>
+                                <td>@artist.Name</td>
+                                <td>@artist.Bio</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editArtistModal-@artist.Id">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteArtistModal-@artist.Id">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Edit Artist Modal -->
+                            <div class="modal fade" id="editArtistModal-@artist.Id" tabindex="-1" role="dialog" aria-labelledby="editArtistModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editArtistModalLabel">Edit Artist</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form action="/Admin/EditArtist" method="POST" enctype="multipart/form-data">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="Id" value="@artist.Id" />
+
+                                                <div class="form-group">
+                                                    <label for="editArtistName">Artist Name</label>
+                                                    <input type="text" class="form-control" name="Name" value="@artist.Name" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Upload Artist Image</label>
+                                                    <input type="file" class="form-control" name="ImageUrl" />
+                                                    <small class="form-text text-muted">Leave empty to keep the current image.</small>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="editArtistBio">Artist Bio</label>
+                                                    <textarea class="form-control" name="Bio" required>@artist.Bio</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delete Confirmation Modal -->
+                            <div class="modal fade" id="deleteArtistModal-@artist.Id" tabindex="-1" role="dialog" aria-labelledby="deleteArtistModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form action="/Admin/DeleteArtist" method="POST">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="Id" value="@artist.Id" />
+                                                <p>Are you sure you want to delete <strong>@artist.Name</strong>?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Artist Modal -->
+<div class="modal fade" id="addArtistModal" tabindex="-1" role="dialog" aria-labelledby="addArtistModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Artist</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/Admin/AddArtist" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="artistName">Artist Name</label>
+                        <input type="text" class="form-control" name="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Artist Image</label>
+                        <input type="file" class="form-control" name="ImageUrl" />
+                        <small class="form-text text-muted">Leave empty to keep the current image.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="artistBio">Artist Bio</label>
+                        <textarea class="form-control" name="Bio" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Artist</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(".alert").fadeOut("slow");
+        }, 5000);
+    });
+</script>

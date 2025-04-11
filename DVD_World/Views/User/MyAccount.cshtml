@@ -1,0 +1,133 @@
+﻿@model DVD_World.Models.User
+
+
+@{
+    Layout = "UserLayout";
+}
+
+
+<div class="breadcrumb-area breadcrumb-modify-padding bg-black-2">
+    <div class="container">
+        <div class="in-breadcrumb">
+            <div class="row">
+                <div class="col">
+                    <div class="breadcrumb-style-2 center">
+                        <h2>My Account</h2>
+                        <ul class="breadcrumb-list-2 black">
+                            <li><a href="index-4.html">Home</a></li>
+                            <li>My Account</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<main class="my-account-wrapper section-pt-90 section-pb-90 bg-black">
+    <div class="container">
+        <div class="col-md-12 col-lg-12">
+            <!-- Nav tabs -->
+            <ul role="tablist" class="nav dashboard-list white mb--60">
+                <li class="active" role="presentation"><a href="#account-details" data-bs-toggle="tab" class="tablist-btn active">Account details</a></li>
+            </ul>
+        </div>
+
+        <div class="tab-content dashboard-content">
+            <div class="tab-pane active" id="account-details">
+                <div class="row">
+                    <div class="col-lg-3 col-xl-2 col-md-3">
+                        <div class="our-profile-images mb--60">
+                            <div class="profile-media">
+                                <div class="edit-profile">
+                                    <img src="~/@Model.Image" alt="Profile Image" class="img-fluid">
+                                    <div class="btn-file">
+                                        <span class="btn-file-icon"><i class="zmdi zmdi-camera-bw"></i></span>
+@*                                         <input type="file" name="Image" accept="image/*"> *@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-xl-10 col-md-9">
+                        <div class="account-form-container-wrapper our-product-left_m">
+                            <div class="login">
+                                <div class="account-form-container">
+                                    <div class="account-login-form">
+
+                                       
+                                        <!-- Show Bootstrap Alerts -->
+                                        @if (TempData["Success"] != null)
+                                        {
+                                            <div class="alert alert-success">@TempData["Success"]</div>
+                                        }
+                                        @if (TempData["Error"] != null)
+                                        {
+                                            <div class="alert alert-danger">@TempData["Error"]</div>
+                                        }
+
+                                        <!-- My Account Form -->
+                                        <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+                                            <div class="my-account-form-wrap border-bottom-2 white pb--30">
+                                                <h3>General Information</h3>
+                                                <p>Update your personal information below:</p>
+
+                                                <div class="row account-input-box">
+                                                    <div class="col-md-6 single-input-box">
+                                                        <label>Full Name</label>
+                                                        <input type="text" name="Name" value="@Model.Name" required>
+                                                    </div>
+                                                    <div class="col-md-6 single-input-box">
+                                                        <label>Username</label>
+                                                        <input type="text" name="Username" value="@Model.Username" required>
+                                                    </div>
+                                                    <div class="col-md-6 single-input-box mt--15">
+                                                        <label>Email Address</label>
+                                                        <input type="email" name="Email" readonly value="@Model.Email" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Password Change Section -->
+                                            <div class="my-account-form-wrap border-bottom-2 white mt--30 pb--30">
+                                                <h3>Change Password</h3>
+                                                <div class="row account-input-box">
+                                                    <div class="col-md-4 single-input-box mt--15">
+                                                        <label>Current Password:</label>
+                                                        <input type="password" name="CurrentPassword">
+                                                    </div>
+                                                    <div class="col-md-4 single-input-box mt--15">
+                                                        <label>New Password:</label>
+                                                        <input type="password" name="NewPassword">
+                                                    </div>
+                                                    <div class="col-md-4 single-input-box mt--15">
+                                                        <label>Confirm Password</label>
+                                                        <input type="password" name="ConfirmPassword">
+                                                    </div>
+                                                    <div class="col-md-4 single-input-box mt--15">
+                                                        <label>Profile Image</label>
+                                                        <input type="file" name="Image" accept="image/*">
+                                                        <small class="form-text text-muted">Leave empty to keep the current image.</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="button-box mt--30">
+                                                <button type="submit" class="btn theme-color-four">Save Changes</button>
+                                            </div>
+                                        </form>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+      
+        </div>
+
+    </div>
+</main>   

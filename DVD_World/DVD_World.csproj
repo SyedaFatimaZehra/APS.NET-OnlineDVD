@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\albumImages\" />
+    <Folder Include="wwwroot\artistImages\" />
+    <Folder Include="wwwroot\advertisementImages\" />
+    <Folder Include="wwwroot\adminImages\" />
+    <Folder Include="wwwroot\userImages\" />
+    <Folder Include="wwwroot\productImages\" />
+    <Folder Include="wwwroot\songsImage\" />
+    <Folder Include="wwwroot\movies\" />
+    <Folder Include="wwwroot\moviesImage\" />
+    <Folder Include="wwwroot\games\" />
+    <Folder Include="wwwroot\gamesImages\" />
+    <Folder Include="wwwroot\gameTrailers\" />
+    <Folder Include="wwwroot\movieTrailers\" />
+    <Folder Include="wwwroot\newsImages\" />
+    <Folder Include="wwwroot\songs\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,58 @@
+﻿@{
+    Layout = "UserLayout";
+}
+
+@model List<Product>
+
+<div class="movie-list-area section-ptb-50 bg-black-2">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-9 col-lg-12 me-auto ms-auto">
+                <div class="movie-list-top-bar">
+                    <div class="movie-list-title">
+                        <h2 class="title">My Products</h2>
+                    </div>
+                </div>
+
+                <div class="movielist-wrap">
+                    @if (Model.Any())
+                    {
+                        @foreach (var product in Model)
+                        {
+                            <div class="single-movielist">
+                                <div class="movielist-img-content">
+                                    <div class="movielist-img">
+                                        <a href="@Url.Action("ProductDetail", "Product", new { id = product.Id })">
+                                            <img src="~/@product.ImageUrl" alt="@product.Name">
+                                        </a>
+                                    </div>
+                                    <div class="movielist-content">
+                                        <h3 class="title"><a href="#">@product.Name</a></h3>
+                                        <p>@product.Description</p>
+                                        <p><strong>Price:</strong> $@product.Price</p>
+                                    </div>
+                                </div>
+                                <div class="movielist-close">
+                                    <a class="btn btn-danger btn-sm" href="@Url.Action("RemoveFromCart", "Product", new { id = product.Id })">
+                                        <i class="zmdi zmdi-close"></i>
+                                    </a>
+                                </div>
+                                @if (Model.Any())
+                                {
+                                    <div class="text-center mt-4">
+                                        <a href="@Url.Action("Checkout", "User")" class="btn btn-success">Proceed to Checkout</a>
+                                    </div>
+                                }
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-center text-white">No products in your cart.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

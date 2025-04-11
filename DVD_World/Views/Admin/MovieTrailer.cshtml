@@ -1,0 +1,199 @@
+﻿@using DVD_World.Models;
+@model List<MovieTrailer>
+
+<link href="~/Admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Movie Trailers</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Movie Trailer List</h6>
+            <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addMovieTrailerModal">
+                <i class="fas fa-film"></i> Add New Trailer
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Title</th>
+                            <th>Movie Name</th>
+                            <th>Movie Trailer</th>
+                            <th>Release Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            @foreach (var trailer in Model)
+                            {
+                                <tr class="text-center">
+                                    <td>@trailer.Title</td>
+                                    <td>@trailer.Movie?.MovieName</td>
+                                    <td>
+                                        <a href="~/@trailer.TrailerUrl" target="_blank">Watch Trailer</a>
+                                    </td>
+                                    <td>@trailer.ReleaseDate.ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editMovieTrailerModal-@trailer.Id">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteMovieTrailerModal-@trailer.Id">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Edit Movie Trailer Modal -->
+                                <div class="modal fade" id="editMovieTrailerModal-@trailer.Id" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit Movie Trailer</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <form asp-action="EditMovieTrailer" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="Id" value="@trailer.Id" />
+                                                    <div class="form-group">
+                                                        <label>Title</label>
+                                                        <input type="text" class="form-control" name="Title" value="@trailer.Title" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Movie</label>
+                                                        <select class="form-control" name="MovieId" required>
+                                                            @foreach (var movie in ViewBag.Movies)
+                                                            {
+                                                                <option value="@movie.Id" selected="@(movie.Id == trailer.MovieId ? "selected" : null)">
+                                                                    @movie.MovieName
+                                                                </option>
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Trailer URL</label>
+                                                        <input type="file" class="form-control" name="TrailerUrl" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Release Date</label>
+                                                        <input type="date" class="form-control" name="ReleaseDate" value="@trailer.ReleaseDate.ToString("yyyy-MM-dd")" />
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Delete Movie Trailer Modal -->
+                                <div class="modal fade" id="deleteMovieTrailerModal-@trailer.Id" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <form asp-action="DeleteMovieTrailer" asp-controller="Admin" method="POST">
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="Id" value="@trailer.Id" />
+                                                    <p>Are you sure you want to delete <strong>@trailer.Title</strong>?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Movie Trailer Modal -->
+<div class="modal fade" id="addMovieTrailerModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Movie Trailer</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form asp-action="AddMovieTrailer" asp-controller="Admin" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" class="form-control" name="Title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Movie</label>
+                        <select class="form-control" name="MovieId" required>
+                            <option value="">Select a movie</option>
+                            @foreach (var movie in ViewBag.Movies)
+                            {
+                                <option value="@movie.Id">@movie.MovieName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trailer URL</label>
+                        <input type="file" class="form-control" name="TrailerUrl" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Release Date</label>
+                        <input type="date" class="form-control" name="ReleaseDate" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Trailer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(".alert").fadeOut("slow");
+        }, 5000);
+    });
+</script>
